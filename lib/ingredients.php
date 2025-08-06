@@ -2,7 +2,6 @@
 class Ingredients
 {
     private $connection;
-
     public function __construct($connection)
     {
         $this->connection = $connection;
@@ -21,7 +20,6 @@ class Ingredients
         }
         return null;
     }
-
     public function fetchIngredientsWithArticle($recipe_id)
     {
         $sql = "SELECT ingredients.*, article.name, article.price, article.unit
