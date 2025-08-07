@@ -18,6 +18,6 @@ class User
         if (mysqli_num_rows($result) > 0) {
             return mysqli_fetch_assoc($result); // Fetch op associative array manier
         }
-        return null; // Return null if no user is found
+        return false; // Return false if no user is found
     }
 }
