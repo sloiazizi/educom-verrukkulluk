@@ -9,12 +9,12 @@ class RecipeInfo
         $this->connection = $connection;
         $this->user = $userObject;
     }
-    private function fetchUser($user_id)
+    private function fetchUser($user_id) // private because right side 
     {
         return $this->user->fetchUser($user_id);
     }
 
-    public function getRecipeInfo($recipe_id, $record_type)
+    public function fetchRecipeInfo($recipe_id, $record_type)
     {
         $sql = "SELECT * FROM recipeinfo WHERE recipe_id = ? AND record_type = ?";
         $stmt = $this->connection->prepare($sql);
@@ -26,14 +26,15 @@ class RecipeInfo
         $stmt->execute();
         $result = $stmt->get_result();
 
-        $data = [];
+        $data = []; 
 
         while ($row = $result->fetch_assoc()) {
-            // Voeg user info toe alleen bij 'C' of 'F'
             if ($record_type === 'C' || $record_type === 'F') {
-                $row['user_info'] = $this->fetchUser($row['user_id']);
+                $user_info = $this->fetchUser($row['user_id']); //smexy way c:
+                $data[] = [...$row, ...$user_info];
+            } else {
+                $data[] = $row;
             }
-            $data[] = $row;
         }
 
         return $data;
