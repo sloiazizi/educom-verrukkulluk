@@ -22,15 +22,13 @@ class Ingredients {
 
             foreach ($ingredients as &$ingredient) { // Loop door de ingrediënten >> Haal artikelgegevens op voor elk ingrediënt >> en voeg deze toe aan het ingrediënt 
                 $article = $this->fetchArticle($ingredient['article_id']);
-                if ($article) {
-                    $ingredient['article_name'] = $article['name'];
-                    $ingredient['price'] = $article['price'];
-                    $ingredient['unit'] = $article['unit'];
+                if ($article) { // smexy way 
+                    $ingredient = [...$ingredient, ...$article];
                 }
             }
             return $ingredients;
         }
-        return null;
+        return false;
     }
 
     private function fetchArticle($article_id) {// <<<<<<<<<<<<<<<<<   PRIVATE functie zoals in ASD 
