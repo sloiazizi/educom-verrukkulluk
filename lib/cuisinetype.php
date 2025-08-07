@@ -7,11 +7,11 @@ class CuisineType
         $this->connection = $connection;
     }
     // Fetch cuisine type --> record type (C or T)
-    public function fetchCuisineType($record_type)
+    public function fetchCuisineType($cuisinetype_id)
     {
         $sql = "SELECT * FROM cuisinetype WHERE id = ?";
         $stmt = mysqli_prepare($this->connection, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $record_type);
+        mysqli_stmt_bind_param($stmt, "s", $cuisinetype_id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
 
