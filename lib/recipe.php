@@ -49,6 +49,40 @@ class Recipe
 
         return false;  // false when no recipe found
     }
+    
+    public function fetchAllRecipes()
+    {
+        $sql = "SELECT id FROM recipe ORDER BY id DESC"; // Fetch all recipe IDs
+        $stmt = $this->connection->prepare($sql); 
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $recipes = []; // hier komen alle recipes
+
+        while ($row = $result->fetch_assoc()) { // loop door alle recipe IDs heen 
+            $recipe_id = $row['id']; //recipe_id pakken uit ding
+            $recipeData = $this->fetchRecipe($recipe_id); // dit kan dan bestaande fetchRecipe() gebruiken
+            if ($recipeData) {
+                $recipes[] = $recipeData;
+            }
+        }
+
+        return $recipes;// return alle recipes
+    }
+
+    public function fetchRecipesByIds(array $recipe_ids)
+    {
+        $recipes = [];
+
+        foreach ($recipe_ids as $id) {
+            $recipeData = $this->fetchRecipe($id);
+            if ($recipeData) {
+                $recipes[] = $recipeData;
+            }
+        }
+
+        return $recipes;
+    }
 
     // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆   Private functions for recipe info ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
     private function fetchRecipeInfoComments($recipe_id)
