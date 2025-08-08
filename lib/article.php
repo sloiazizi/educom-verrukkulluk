@@ -18,6 +18,6 @@ class Article
         if (mysqli_num_rows($result) > 0) {
             return mysqli_fetch_assoc($result); // van W3 chapter php mySQLi + associative array
         }
-        return null; //when article not found then it will return null 
+        return false; //when article not found then it will return null 
     }
 }
