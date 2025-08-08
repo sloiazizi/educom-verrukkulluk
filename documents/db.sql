@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 01, 2025 at 02:04 PM
+-- Generation Time: Aug 08, 2025 at 10:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,7 @@ INSERT INTO `article` (`id`, `name`, `description`, `price`, `unit`) VALUES
 CREATE TABLE `cuisinetype` (
   `id` int(10) NOT NULL,
   `record_type` varchar(1) NOT NULL,
-  `description` varchar(11) NOT NULL
+  `description` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -69,7 +69,7 @@ CREATE TABLE `cuisinetype` (
 --
 
 INSERT INTO `cuisinetype` (`id`, `record_type`, `description`) VALUES
-(1, 'C', 'Italian'),
+(1, 'C', 'Middle Eastern'),
 (2, 'C', 'Dutch'),
 (3, 'C', 'Mexican'),
 (4, 'C', 'Korean'),
@@ -87,26 +87,27 @@ INSERT INTO `cuisinetype` (`id`, `record_type`, `description`) VALUES
 CREATE TABLE `ingredients` (
   `id` int(10) NOT NULL,
   `recipe_id` int(1) NOT NULL,
-  `article_id` int(10) NOT NULL,
-  `amount` varchar(11) NOT NULL
+  `article_id` int(2) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `calories` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `ingredients`
 --
 
-INSERT INTO `ingredients` (`id`, `recipe_id`, `article_id`, `amount`) VALUES
-(1, 1, 1, '1 stuk'),
-(2, 1, 2, '2 stuks'),
-(3, 1, 3, '100 gram'),
-(4, 2, 4, '150 gram'),
-(5, 2, 5, '2 eetlepels'),
-(6, 2, 6, '1 stuk'),
-(7, 3, 7, '150 gram'),
-(8, 3, 8, '1 eetlepel'),
-(9, 4, 9, '1 fles'),
-(10, 4, 10, '2 eetlepels'),
-(11, 1, 11, '1 bosje');
+INSERT INTO `ingredients` (`id`, `recipe_id`, `article_id`, `amount`, `calories`) VALUES
+(1, 1, 1, 1, 15),
+(2, 1, 2, 2, 45),
+(3, 1, 3, 100, 265),
+(4, 2, 4, 150, 600),
+(5, 2, 5, 2, 30),
+(6, 2, 6, 1, 40),
+(7, 3, 7, 150, 520),
+(8, 3, 8, 1, 50),
+(9, 4, 9, 1, 300),
+(10, 4, 10, 2, 60),
+(11, 1, 11, 1, 10);
 
 -- --------------------------------------------------------
 
@@ -131,7 +132,7 @@ CREATE TABLE `recipe` (
 --
 
 INSERT INTO `recipe` (`id`, `cuisine_id`, `type_id`, `user_id`, `added_date`, `title`, `short_description`, `long_description`, `picture`) VALUES
-(1, 2, 5, 1, '25/07/2025', 'Middle Eastern Salad', 'Frisse salade met komkommer, tomaat en feta', 'Een frisse salade met munt en komkommer.', 'salad.jpg'),
+(1, 1, 5, 1, '25/07/2025', 'Middle Eastern Salad', 'Frisse salade met komkommer, tomaat en feta', 'Een frisse salade met munt en komkommer.', 'salad.jpg'),
 (2, 3, 6, 2, '26/07/2025', 'American Burger', 'Homemade burger met cheddar en srirachasaus', 'Een burger met pittige saus en ui.', 'burger.jpg'),
 (3, 4, 7, 3, '27/07/2025', 'Korean Noodles', 'Pittige noedels met groenten en sojasaus', 'Heet, pittig gerecht met sesamzaadjes.', 'noodles.jpg'),
 (4, 2, 8, 4, '28/07/2025', 'Dutch Pancake', 'Dunne pannenkoek met poedersuiker en stroop', 'Traditionele Nederlandse pannenkoek.', 'pancake.jpg');
