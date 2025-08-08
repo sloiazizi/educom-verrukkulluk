@@ -18,6 +18,6 @@ class CuisineType
         if (mysqli_num_rows($result) > 0) {
             return mysqli_fetch_assoc($result);
         }
-        return null;
+        return false;
     }
 }
