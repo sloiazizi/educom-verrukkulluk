@@ -50,34 +50,29 @@ class Recipe
         return false;  // false when no recipe found
     }
     
-    public function fetchAllRecipes()
-    {
-        $sql = "SELECT id FROM recipe ORDER BY id DESC"; // Fetch all recipe IDs
-        $stmt = $this->connection->prepare($sql); 
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $recipes = []; // hier komen alle recipes
-
-        while ($row = $result->fetch_assoc()) { // loop door alle recipe IDs heen 
-            $recipe_id = $row['id']; //recipe_id pakken uit ding
-            $recipeData = $this->fetchRecipe($recipe_id); // dit kan dan bestaande fetchRecipe() gebruiken
-            if ($recipeData) {
-                $recipes[] = $recipeData;
-            }
-        }
-
-        return $recipes;// return alle recipes
-    }
-
-    public function fetchRecipesByIds(array $recipe_ids)
+    public function fetchRecipes($recipe_ids = null)
     {
         $recipes = [];
-
-        foreach ($recipe_ids as $id) {
-            $recipeData = $this->fetchRecipe($id);
-            if ($recipeData) {
-                $recipes[] = $recipeData;
+        
+        if ($recipe_ids === null) { //hiermee kan ik zeggen fetch all recipes c:
+            $sql = "SELECT id FROM recipe ORDER BY id DESC";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            while ($row = $result->fetch_assoc()) {
+                $recipe_id = $row['id'];
+                $recipeData = $this->fetchRecipe($recipe_id);
+                if ($recipeData) {
+                    $recipes[] = $recipeData;
+                }
+            }
+        } else {// en anders doe je het per recipe_id c:
+            foreach ($recipe_ids as $id) {
+                $recipeData = $this->fetchRecipe($id);
+                if ($recipeData) {
+                    $recipes[] = $recipeData;
+                }
             }
         }
 
@@ -121,26 +116,23 @@ class Recipe
         return $this->user->fetchUser($user_id);
     }
 
+
     // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆   Private functions for price and calories calculations ◆◆◆◆◆◆◆◆◆◆◆◆◆◆
    private function calcPricePer4people($recipe_id)
     {
-        $sql = "SELECT a.price, a.unit, i.amount 
-                FROM ingredients i
-                JOIN article a ON i.article_id = a.id
-                WHERE i.recipe_id = ?";
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bind_param("i", $recipe_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
+        $ingredients = $this->fetchIngredients($recipe_id);
+        
+        if (!$ingredients) {
+            return 0;
+        }
+        
         $total = 0;
-
-        while ($row = $result->fetch_assoc()) {
-            $price = $row['price'];
-            $amount = $row['amount'];
-            $unit = strtolower($row['unit']);
-
-            // eenheid calc meenemen door factor te geven zoals in video
+        
+        foreach ($ingredients as $ingredient) {
+            $price = $ingredient['price'];
+            $amount = $ingredient['amount'];
+            $unit = strtolower($ingredient['unit']);
+            
             switch ($unit) {
                 case 'per stuk':
                 case 'per pak':
@@ -157,24 +149,27 @@ class Recipe
                 default:
                     $factor = 1; 
             }
-
             $itemPrice = $price * $amount * $factor;
             $total += $itemPrice;
         }
-
-        return round($total * 4, 2); // 4 p, afgerond op 2 deci
+        
+        return round($total * 4, 2);
     }
 
     private function calcCaloriesPer4people($recipe_id)
     {
-        // SQL query to calculate the total calories for the recipe
-        $sql = "SELECT SUM(calories) * 4 AS total_calories FROM ingredients WHERE recipe_id = ?";
-        $stmt = $this->connection->prepare($sql);
-        $stmt->bind_param("i", $recipe_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
+        $ingredients = $this->fetchIngredients($recipe_id);
+        
+        if (!$ingredients) {
+            return 0;
+        }
+        
+        $totalCalories = 0;
+        
+        foreach ($ingredients as $ingredient) {
+            $totalCalories += $ingredient['calories'];
+        }
 
-        return $row['total_calories'];  // Return total calories for 4 p
+        return $totalCalories * 4;
     }
 }

@@ -1,37 +1,22 @@
 <?php
 require_once("lib/db.php");
-require_once("lib/article.php");
+require_once("lib/recipe.php");
 require_once("lib/user.php");
-require_once("lib/cuisinetype.php");
-require_once("lib/ingredients.php");
-require_once("lib/recipeinfo.php");
-require_once("lib/recipe.php"); 
 
-/// INIT
 $db = new Database();
 $connection = $db->getConnection();
-
-$art = new Article($connection);
 $user = new User($connection);
-$ct = new CuisineType($connection);
-$ingredients = new Ingredients($connection);
-$recipeInfo = new RecipeInfo($connection, $user);
-$recipe = new Recipe($connection);
+$recipe = new Recipe($connection, $user);
 
-/// VERWERK
-$dataArticle = $art->fetchArticle(8);
-$dataUser = $user->fetchUser(1);
-$dataCuisineType = $ct->fetchCuisineType(4);
-$dataIngredients = $ingredients->fetchIngredientsWithArticle(1);
 
-$dataRecipePrep = $recipeInfo->getRecipeInfo(1, 'P');
-$dataRecipeComments = $recipeInfo->getRecipeInfo(1, 'C');
-$dataRecipeFavourites = $recipeInfo->getRecipeInfo(1, 'F');
-$dataRecipeRatings = $recipeInfo->getRecipeInfo(1, 'R');
+$recipeIds = [2, 3]; 
+$allRecipes = $recipe->fetchRecipes($recipeIds);
 
-$dataRecipe = $recipe->fetchRecipe(1);
-
-/// RETURN
-echo "<pre>";
-var_dump($dataRecipe);
-echo "</pre>";
+// Toon recepten - layout heb ik gepakt van reddit post hehe
+foreach ($allRecipes as $recipeData) {
+    echo "<h2>" . htmlspecialchars($recipeData['title']) . "</h2>";
+    echo "<p>" . nl2br(htmlspecialchars($recipeData['long_description'] ?? $recipeData['short_description'])) . "</p>";
+    echo "<p>Prijs voor 4 personen: €" . number_format($recipeData['priceFor4'], 2) . "</p>";
+    echo "<p>Calorieën: " . intval($recipeData['caloriesFor4']) . " kcal</p>";
+    echo "<hr>";
+}
