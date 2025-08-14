@@ -118,7 +118,9 @@ class Recipe
 
 
     // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆   Private functions for price and calories calculations ◆◆◆◆◆◆◆◆◆◆◆◆◆◆
-   private function calcPricePer4people($recipe_id)
+   // Replace these methods in your Recipe.php file
+
+    private function calcPricePer4people($recipe_id)
     {
         $ingredients = $this->fetchIngredients($recipe_id);
         
@@ -130,30 +132,21 @@ class Recipe
         
         foreach ($ingredients as $ingredient) {
             $price = $ingredient['price'];
-            $amount = $ingredient['amount'];
-            $unit = strtolower($ingredient['unit']);
+            $needed_amount_per_person = $ingredient['amount']; 
+            $needed_amount_for_4 = $needed_amount_per_person * 4;
+            $package_size = $ingredient['package_size']; 
             
-            switch ($unit) {
-                case 'per stuk':
-                case 'per pak':
-                case 'per fles':
-                case 'per bosje':
-                    $factor = 1;
-                    break;
-                case 'per 100g':
-                    $factor = 0.01;
-                    break;
-                case 'per kg':
-                    $factor = 0.001;
-                    break;
-                default:
-                    $factor = 1; 
+            if ($package_size == 1) { // now for 4 peeps
+                $packages_needed = $needed_amount_for_4;
+            } else {
+                $packages_needed = ceil($needed_amount_for_4 / $package_size); //ceil heb ik van manual
             }
-            $itemPrice = $price * $amount * $factor;
-            $total += $itemPrice;
+            
+            $item_cost = $price * $packages_needed;
+            $total += $item_cost;
         }
         
-        return round($total * 4, 2);
+        return round($total, 2);
     }
 
     private function calcCaloriesPer4people($recipe_id)
@@ -167,9 +160,23 @@ class Recipe
         $totalCalories = 0;
         
         foreach ($ingredients as $ingredient) {
-            $totalCalories += $ingredient['calories'];
+            $calories_per_unit = $ingredient['calories'];
+            $needed_amount = $ingredient['amount'];
+            $package_size = $ingredient['package_size'];
+            
+            // Calculate calories based on actual amount used
+            if ($package_size == 1) {
+                // For items per piece
+                $actual_calories = $calories_per_unit * $needed_amount;
+            } else {
+                // For items with package sizes - calculate calories per unit
+                $calories_per_gram_or_unit = $calories_per_unit / $package_size;
+                $actual_calories = $calories_per_gram_or_unit * $needed_amount;
+            }
+            
+            $totalCalories += $actual_calories;
         }
 
-        return $totalCalories * 4;
+        return round($totalCalories * 4);
     }
 }
