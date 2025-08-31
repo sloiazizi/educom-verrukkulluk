@@ -1,5 +1,377 @@
+{# Include the "Main" file #}
 {% extends "main.html.twig" %}
 
 {% block header %}
-<h1>Hallo Bram</h1>
+<header class="header-section" {% if data.picture %}style="background-image: url('{{ data.picture }}');"{% endif %}>
+    <div class="container header-content">
+        <!-- Logo left -->
+        <div class="header-logo">
+            <img src="assets/img/logo-v2.png" alt="Logo" class="img-fluid"/>
+        </div>
+
+        <!-- ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Right side container for search and menu ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ -->
+        <div class="header-right">
+            <!-- Search -->
+            <div class="header-search">
+                <form class="d-flex">
+                    <input type="text" class="form-control search-input" placeholder="Search">
+                    <button type="submit" class="btn search-btn">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Mega Menu Dropdown ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ -->
+            <div class="dropdown">
+                <button onclick="myFunction()" class="dropbtn">
+                    <i class="fa fa-bars"></i> 
+                </button>
+                <div id="myDropdown" class="dropdown-content mega-dropdown">
+                    <div class="mega-row">
+                        <div class="mega-logo">
+                            <a href="index.php">
+                                <img src="assets/img/logo-v2.png" alt="Logo" class="mega-logo-img"/>
+                            </a>
+                        </div>
+                        <div class="mega-links">
+                            <a href="#">My Favourites</a>
+                            <a href="#">My Shoppinglist</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+    {% if data %}
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+             {# Main Recipe Card #}
+            <div class="card mb-4">
+                <div class="row g-0">
+                    
+                    {# LEFT COLUMN - IMAGE #}
+                    {% if data.picture %}
+                    <div class="col-md-4">
+                        <img src="{{ data.picture }}" class="img-fluid rounded-start w-100" alt="{{ data.title }}" style="object-fit: cover;">
+                    </div>
+                    {% endif %}
+                    
+                    {# RIGHT COLUMN - MAIN CONTENT #}
+                    <div class="col-md-8 d-flex flex-column">
+                        <div class="card-body flex-grow-1">
+
+                            {# Stats row (people, price, calories) #}
+                            <div class="row mb-3">
+                                <div class="col-8">
+                                    <div class="stats-container">
+                                        <span class="stat-item">
+                                            <i class="fa fa-users"></i> 4 people
+                                        </span>
+                                        <span class="stat-item">
+                                            <i class="fa fa-euro-sign"></i> {{ ((data.priceFor4 ?? 0) / 100)|number_format(2) }}
+                                        </span>
+                                        <span class="stat-item">
+                                            <i class="fa fa-fire"></i> {{ data.caloriesFor4 ?? '0' }} kcal
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {#◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Title row with stars on the right◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ #}
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h1 class="mb-0">{{ data.title }}</h1>
+
+                                <div class="rating-stars d-flex align-items-center">
+                                    {% if data.ratings and data.ratings|length > 0 %}
+                                        {% set total_rating = 0 %}
+                                        {% for rating in data.ratings %}
+                                            {% set total_rating = total_rating + (rating.rating ?? 0) %}
+                                        {% endfor %}
+                                        {% set average_rating = (total_rating / data.ratings|length) %}
+
+                                        {% for i in 1..5 %}
+                                            <span class="star {% if i <= average_rating %}red{% endif %}" data-star="{{ i }}">★</span>
+                                        {% endfor %}
+                                        <small class="text-muted ms-2">({{ data.ratings|length }})</small>
+                                    {% else %}
+                                        {% for i in 1..5 %}
+                                            <span class="star" data-star="{{ i }}">★</span>
+                                        {% endfor %}
+                                        <small class="text-muted ms-2">(0)</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {# ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆Author below title◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ #}
+                            {% if data.user and data.user.username %}
+                                <small class="text-muted d-block mb-2">Recipe by: {{ data.user.username }}</small>
+                            {% endif %}
+
+                            {# Description #}
+                            {% if data.long_description %}
+                                <p class="card-text mt-2" style="white-space: pre-wrap;">{{ data.long_description }}</p>
+                            {% endif %}
+
+                        </div>
+
+                        {# ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆BOTTOM ROW: shopping list | heart icon ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆#}
+                        <div class="row mt-3 mb-3 px-3">   
+                            <div class="col-6 d-flex justify-content-center">
+                                <button class="btn btn-success w-100">
+                                    <i class="fa fa-cart-plus"></i> Add to Shopping List
+                                </button>
+                            </div>
+                            <div class="col-6 d-flex justify-content-center">
+                                <a href="javascript:void(0);" class="favourite-btn">
+                                    <div class="heart-icon"></div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            {# ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Tabs Card ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆#}
+            <div class="card">
+                <div class="card-body">
+                    <div class="recipe-tabs">
+                        <!-- Tab Navigation -->
+                        <div class="tab">
+                            <button class="tablinks" onclick="openTab(event, 'ingredients')" id="defaultOpen">
+                                <i class="fa fa-shopping-basket"></i> Ingredients
+                            </button>
+                            <button class="tablinks" onclick="openTab(event, 'preparation')">
+                                <i class="fa fa-list-ol"></i> Preparations
+                            </button>
+                            <button class="tablinks" onclick="openTab(event, 'comments')">
+                                <i class="fa fa-comments"></i> Comments
+                            </button>
+                        </div>
+
+                        <!-- ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆Tab Content: Ingredients ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆-->
+                        <div id="ingredients" class="tabcontent">
+                            {% if data.ingredients and data.ingredients|length > 0 %}
+                                <h3><i class="fa fa-shopping-basket"></i> Ingredients</h3>
+                                <ul class="list-group list-group-flush">
+                                    {% for ingredient in data.ingredients %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{{ ingredient.name }}</strong><br>
+                                            <small class="text-muted">
+                                                {{ (ingredient.amount * 4) }} {{ ingredient.recipe_unit }}
+                                            </small>
+                                        </div>
+                                        <span class="badge badge-primary badge-pill">
+                                            €{{ (((ingredient.price ?? 0) * (ingredient.amount ?? 0) * 4) / 100)|number_format(2) }}
+                                        </span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p>No ingredients available for this recipe.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Tab Content: Preparation Steps ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ -->
+                        <div id="preparation" class="tabcontent">
+                            {% if data.preparationSteps and data.preparationSteps|length > 0 %}
+                                <h3><i class="fa fa-list-ol"></i> Preparation Steps</h3>
+                                <ol>
+                                    {% for step in data.preparationSteps %}
+                                    <li class="mb-3">{{ step.text_content }}</li>
+                                    {% endfor %}
+                                </ol>
+                            {% else %}
+                                <p>No preparation steps available for this recipe.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Tab Content: Comments ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ -->
+                        <div id="comments" class="tabcontent">
+                            {% if data.comments and data.comments|length > 0 %}
+                                <h3><i class="fa fa-comments"></i> Comments ({{ data.comments|length }})</h3>
+                                {% for comment in data.comments %}
+                                <div class="border-bottom pb-2 mb-3">
+                                    <strong>{{ comment.username ?? 'Anonymous' }}</strong>
+                                    <small class="text-muted">{{ comment.date }}</small>
+                                    <p class="mb-1">{{ comment.text_content }}</p>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No comments yet for this recipe.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4 mb-4">
+        <div class="col-12 d-flex justify-content-end">
+            <a href="index.php" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Back to Recipes
+            </a>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="alert alert-warning">
+        <h4>Recipe not found</h4>
+        <p>The recipe you're looking for doesn't exist.</p>
+        <a href="index.php" class="btn btn-primary">Back to Homepage</a>
+    </div>
+    {% endif %}
+    
+    {# ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Scripts + Styles for tabs and stars ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ #}
+    <script>
+    function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+    document.getElementById("defaultOpen").click();
+
+    function addToShoppingList(recipeId) {
+        fetch('add_to_shopping_list.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ recipe_id: recipeId, servings: 4 })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Ingredients added to shopping list!');
+            } else {
+                alert('Error adding to shopping list: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding to shopping list');
+        });
+    }
+
+    // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ ⭐ rating functionality ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
+    $(document).ready(function() {
+        $(".star").click(function(){
+            const value = $(this).attr("data-star");
+            
+            $(".star").removeClass('red');
+            $(".star").each((index, Element) => {
+                const itemValue = $(Element).attr('data-star')
+                if (itemValue <= value){
+                    $(Element).addClass('red');
+                }
+            });
+            
+            // Ajax call for rating
+            $.ajax({
+                url: "rate_recipe.php", // adjust this URL as needed
+                method: "POST",
+                data: {
+                    recipe_id: {{ data.id ?? 0 }},
+                    rating: value
+                },
+                success: function(result) { 
+                    console.log('Rating saved successfully');
+                }
+            });
+            
+            console.log(`Value: ${value}`);
+        }); 
+    });
+
+    // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ favourites shizzle 🩵 ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
+    document.addEventListener("DOMContentLoaded", function () {
+        const favBtn = document.querySelector(".favourite-btn");
+        if (favBtn) {
+            favBtn.addEventListener("click", function () {
+                this.classList.toggle("active");
+
+                // Example AJAX to save favourite:
+                fetch("toggle_favourite.php", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({ recipe_id: {{ data.id ?? 0 }} })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Favourite toggled:", data);
+                })
+                .catch(err => console.error(err));
+            });
+        }
+    });
+
+    // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆ Toggle dropdown when button is clicked ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
+    function myFunction() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown if user clicks outside
+    window.onclick = function(event) {
+        // FIX: use closest() so clicks on <i> inside the button still count as the button
+        if (!event.target.closest('.dropbtn')) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
+
+    </script>
+
+    <style>
+    .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        border-radius: 8px 8px 0 0;
+    }
+    .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .tab button:hover { background-color: #ddd; }
+    .tab button.active { background-color: var(--darker-red); color: white; }
+    .tab button i { margin-right: 8px; }
+    .tabcontent {
+        display: none;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-top: none;
+        background-color: white;
+        border-radius: 0 0 8px 8px;
+        animation: fadeEffect 0.3s;
+    }
+    @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} }
+    .recipe-tabs { margin-top: 20px; }
+    
+    </style>
 {% endblock %}

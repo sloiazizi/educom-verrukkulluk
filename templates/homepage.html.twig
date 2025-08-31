@@ -1,48 +1,126 @@
-{# Opnemen van de "Main" file #}
 {% extends "main.html.twig" %}
 
 {% block header %}
-<img src="assets/img/logo-v2.png"/>
+<header class="header-section" {% if data.picture %}style="background-image: url('{{ data.picture }}');"{% endif %}>
+    <div class="container header-content">
+        <!-- Logo left -->
+        <div class="header-logo">
+            <img src="assets/img/logo-v2.png" alt="Logo" class="img-fluid"/>
+        </div>
+
+        <!-- Right side container for search and menu -->
+        <div class="header-right">
+            <!-- Search -->
+            <div class="header-search">
+                <form class="d-flex">
+                    <input type="text" class="form-control search-input" placeholder="Search">
+                    <button type="submit" class="btn search-btn">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Mega Menu Dropdown -->
+            <div class="dropdown">
+                <button onclick="myFunction()" class="dropbtn">
+                    <i class="fa fa-bars"></i> 
+                </button>
+                <div id="myDropdown" class="dropdown-content mega-dropdown">
+                    <div class="mega-row">
+                        <div class="mega-logo">
+                            <a href="index.php">
+                                <img src="assets/img/logo-v2.png" alt="Logo" class="mega-logo-img"/>
+                            </a>
+                        </div>
+                        <div class="mega-links">
+                            <a href="#">My Favourites</a>
+                            <a href="#">My Shoppinglist</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
 {% endblock %}
 
-
-{# nu de block content op in de main pagina vullen #}
 {% block content %}
-    {# Dit is commentaar #}
+    <div class="row">
+        {% if data and data|length > 0 %}
+            {% for recipe in data %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    {% if recipe.picture %}
+                    <img src="{{ recipe.picture }}" class="card-img-top" alt="{{ recipe.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ recipe.title }}</h5>
+                        {% if recipe.short_description %}
+                        <p class="card-text">{{ recipe.short_description }}</p>
+                        {% endif %}
 
-    {# Print #}
-    <h1>Heading #1</h1>
-    <h2>Heading #2</h2>
-    <h3>Heading #3 t/m 5</h3>
+                       <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="index.php?action=detail&recipe_id={{ recipe.id }}" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-eye"></i> Recipe
+                                </a>
+                                <div class="recipe-info">
+                                    <span class="info-item">
+                                        <i class="fa fa-users"></i> 4
+                                    </span>
+                                    <span class="info-item">
+                                        <i class="fa fa-euro-sign"></i> {{ (recipe.priceFor4 ?? 0) / 100 }}
+                                    </span>
+                                    <span class="info-item">
+                                        <i class="fa fa-fire"></i> {{ recipe.caloriesFor4 ?? '0' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <h4>No recipes found</h4>
+                    <p>There are currently no recipes available.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
-    <h4>Dit is de template {{  title }}</h4>
+    {# Debug output - remove in production #}
+    {% if app.debug %}
+    <div class="mt-5">
+        <details>
+            <summary>Debug Data</summary>
+            <pre>{{ dump(data) }}</pre>
+        </details>
+    </div>
+    {% endif %}
+{% endblock %}
 
-{# Loop #}
-    <ul>
-    {% for record in data %}
-        <li>
-            <img src="{{ record.foto }}" style="width: 100px; heigfht: 100px;">
+{% block scripts %}
+    <script>
+        // Toggle dropdown when button is clicked
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
 
-            {{ record.title }}
-            {# sub-loop #}
-            <ul>
-                {% for ingr in record.ingredienten %}
-                    <li>
-                        <span {% if ingr.id < 2 %}style='color: #F00'{% endif %}>{{  ingr.naam }}</span>
-
-                        {# if #}
-                        {%  if ingr.id == 3 %}
-                            <strong>Dit is ID 3!</strong>
-                        {%  endif  %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </li>
-    {% endfor %}
-    <ul>
-     {# Dump #}
-       <pre>
-        {{ dump(data) }}
-       </pre>
-
+        // Close the dropdown if user clicks outside
+        window.onclick = function(event) {
+            // FIX: use closest() so clicks on <i> inside the button still count as the button
+            if (!event.target.closest('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                for (var i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
 {% endblock %}

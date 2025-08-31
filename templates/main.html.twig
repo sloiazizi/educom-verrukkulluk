@@ -1,53 +1,81 @@
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-
-    <title>het is verrukkuluk! :: {{ TITEL }} </title>
+    <title>het is verrukkuluk! :: {{ title ?? 'Verrukkulluk' }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
     <link rel="stylesheet" type="text/css" href="assets/bootstrap/css/bootstrap.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/fonts.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/fontawesome.css" />
-
     <link rel="stylesheet" type="text/css" href="assets/css/main.css" />
-
     <script type="text/javascript" language="javascript" src="assets/jquery/jquery-3.5.1.js"></script>
     <script type="text/javascript" language="javascript" src="assets/bootstrap/js/bootstrap.js"></script>
-
-</html>
+</head>
 <body>
 <div class="container-fluid">
-
     <div class="row">
         <div class="col-md-12">
         {% block header %}
-            
+
         {% endblock %}   
         </div>
     </div>
-
     <div class="row">
         <div class="col-md-3">
-            <h2>Agenda</h2>
-            <i class="fa fa-calendar"></i> FontAwesome <a href="https://fontawesome.com/icons?d=gallery&m=free">Documentation</a><br>
-            <i class="fa fa-file-pdf"></i><a href="https://www.layoutit.com/build">Layout-it</a>
+              <h2>    </h2>
+            <div class="agenda-section">
+                <h2>Agenda</h2>
+                <div class="agenda-items">
+                    <div class="agenda-item">
+                        <i class="fa fa-calendar"></i> <!-- Calendar Icon -->
+                        <div>
+                            <p>Cook Off Party - Mexican Food</p> <!-- Description -->
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <i class="fa fa-calendar"></i> <!-- Calendar Icon -->
+                        <div>
+                            <p>Class - How To Make Vegetarian Friendly Lasagna</p> <!-- Description -->
+                        </div>
+                    </div>
+                    <div class="agenda-item">
+                        <i class="fa fa-calendar"></i> <!-- Calendar Icon -->
+                        <div>
+                            <p>Class - Homemade Brownies</p> <!-- Description -->
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-
+            <div class="login-section">
+                <h3>Login</h3>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-control" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+            </div>
         </div>
         <div class="col-md-9">
-            <h2>Content</h2>
-            {%  block content %}
-            {%  endblock %}
+            <div class="content-section">
+                <h2>    </h2>
+                {%  block content %}
+                {%  endblock %}
+            </div>
         </div>
     </div>
-
-
     <div class="row">
         <div class="col-md-12">
-            <h1>Footer</h1>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>LALALALALLA.</p>
+            </div>
         </div>
     </div>
-
-
 </div>
-
+    {% block scripts %}{% endblock %}
 </body>
+</html>

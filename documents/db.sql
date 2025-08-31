@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 08, 2025 at 10:12 AM
+-- Generation Time: Aug 20, 2025 at 03:56 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,6 +32,8 @@ CREATE TABLE `article` (
   `name` varchar(14) NOT NULL,
   `description` varchar(21) NOT NULL,
   `price` decimal(3,2) NOT NULL,
+  `package_size` decimal(10,2) NOT NULL DEFAULT 1.00,
+  `recipe_unit` varchar(20) NOT NULL DEFAULT 'gram',
   `unit` varchar(9) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -39,18 +41,18 @@ CREATE TABLE `article` (
 -- Dumping data for table `article`
 --
 
-INSERT INTO `article` (`id`, `name`, `description`, `price`, `unit`) VALUES
-(1, 'Komkommer', 'Verse komkommer', 0.99, 'per stuk'),
-(2, 'Tomaat', 'Ripe tomato', 0.85, 'per stuk'),
-(3, 'Feta cheese', 'Zachte feta kaas', 2.99, 'per 100g'),
-(4, 'Cheddar cheese', 'Geraspte cheddar', 3.99, 'per 100g'),
-(5, 'Sriracha sauce', 'Pittige saus', 1.99, 'per fles'),
-(6, 'Ui (onion)', 'Rode ui', 0.50, 'per stuk'),
-(7, 'Noedels', 'Gedroogde noedels', 2.50, 'per pak'),
-(8, 'Sesamzaadjes', 'Sesamzaadjes', 1.25, 'per 100g'),
-(9, 'Stroop', 'Traditionele stroop', 1.75, 'per fles'),
-(10, 'Poedersuiker', 'Suiker om te strooien', 0.99, 'per pak'),
-(11, 'munt', 'Verse muntblaadjes', 1.50, 'per bosje');
+INSERT INTO `article` (`id`, `name`, `description`, `price`, `package_size`, `recipe_unit`, `unit`) VALUES
+(1, 'Komkommer', 'Verse komkommer', 0.99, 1.00, 'stuk', 'per stuk'),
+(2, 'Tomaat', 'Ripe tomato', 0.85, 1.00, 'stuk', 'per stuk'),
+(3, 'Feta cheese', 'Zachte feta kaas', 2.99, 200.00, 'gram', 'per 200g '),
+(4, 'Cheddar cheese', 'Geraspte cheddar', 3.99, 200.00, 'gram', 'per 200g '),
+(5, 'Sriracha sauce', 'Pittige saus', 1.99, 300.00, 'gram', 'per 300g'),
+(6, 'Ui (onion)', 'Rode ui', 0.50, 1.00, 'stuk', 'per stuk'),
+(7, 'Noedels', 'Gedroogde noedels', 2.00, 500.00, 'gram', 'per 500g '),
+(8, 'Sesamzaadjes', 'Sesamzaadjes', 1.25, 100.00, 'gram', 'per 100g '),
+(9, 'Stroop', 'Traditionele stroop', 1.75, 1.00, 'stuk', 'per fles'),
+(10, 'Poedersuiker', 'Suiker om te strooien', 0.99, 1.00, 'stuk', 'per pak'),
+(11, 'munt', 'Verse muntblaadjes', 1.50, 1.00, 'stuk', 'per bosje');
 
 -- --------------------------------------------------------
 
@@ -101,12 +103,12 @@ INSERT INTO `ingredients` (`id`, `recipe_id`, `article_id`, `amount`, `calories`
 (2, 1, 2, 2, 45),
 (3, 1, 3, 100, 265),
 (4, 2, 4, 150, 600),
-(5, 2, 5, 2, 30),
+(5, 2, 5, 50, 100),
 (6, 2, 6, 1, 40),
-(7, 3, 7, 150, 520),
-(8, 3, 8, 1, 50),
+(7, 3, 7, 250, 520),
+(8, 3, 8, 50, 50),
 (9, 4, 9, 1, 300),
-(10, 4, 10, 2, 60),
+(10, 4, 10, 1, 60),
 (11, 1, 11, 1, 10);
 
 -- --------------------------------------------------------
@@ -123,8 +125,8 @@ CREATE TABLE `recipe` (
   `added_date` varchar(10) NOT NULL,
   `title` varchar(20) NOT NULL,
   `short_description` varchar(43) NOT NULL,
-  `long_description` varchar(40) NOT NULL,
-  `picture` varchar(11) NOT NULL
+  `long_description` varchar(250) NOT NULL,
+  `picture` varchar(300) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -132,10 +134,10 @@ CREATE TABLE `recipe` (
 --
 
 INSERT INTO `recipe` (`id`, `cuisine_id`, `type_id`, `user_id`, `added_date`, `title`, `short_description`, `long_description`, `picture`) VALUES
-(1, 1, 5, 1, '25/07/2025', 'Middle Eastern Salad', 'Frisse salade met komkommer, tomaat en feta', 'Een frisse salade met munt en komkommer.', 'salad.jpg'),
-(2, 3, 6, 2, '26/07/2025', 'American Burger', 'Homemade burger met cheddar en srirachasaus', 'Een burger met pittige saus en ui.', 'burger.jpg'),
-(3, 4, 7, 3, '27/07/2025', 'Korean Noodles', 'Pittige noedels met groenten en sojasaus', 'Heet, pittig gerecht met sesamzaadjes.', 'noodles.jpg'),
-(4, 2, 8, 4, '28/07/2025', 'Dutch Pancake', 'Dunne pannenkoek met poedersuiker en stroop', 'Traditionele Nederlandse pannenkoek.', 'pancake.jpg');
+(1, 1, 5, 1, '25/07/2025', 'Middle Eastern Salad', 'Frisse salade met komkommer, tomaat en feta', 'Een verfrissende salade boordevol smaak: knapperige komkommer, rijpe tomaat, romige feta en verse munt, afgemaakt met een lichte dressing bestaande uit citroensap, limoensap, koriander, zout en peper.', 'https://www.nonguiltypleasures.com/wp-content/uploads/2022/10/arabic-chopped-salad.jpg'),
+(2, 3, 6, 2, '26/07/2025', 'American Burger', 'Homemade burger met cheddar en srirachasaus', 'Een burger met gesmolten cheddar, pittige srirachasaus, knapperige ui en verse sla, geserveerd op een luchtig broodje.', 'https://mydailycuisine.com/wp-content/uploads/2025/03/recipe_image_2_20250307_021344.jpg.webp'),
+(3, 4, 7, 3, '27/07/2025', 'Korean Noodles', 'Pittige noedels met groenten en sojasaus', 'Koreaanse noodles met verse groenten, een stevige gochujang en soy sauce basis, met geroosterde sesamzaadjes voor extra crunch als finishing touch.', 'https://www.kitchensanctuary.com/wp-content/uploads/2024/03/Stir-Fried-Noodles-with-Beansprouts-tall-FS.jpg'),
+(4, 2, 8, 4, '28/07/2025', 'Dutch Pancake', 'Dunne pannenkoek met poedersuiker en stroop', 'Traditionele Nederlandse pannenkoek geserveerd met een royale laag poedersuiker en een scheut zoete stroop. ', 'https://www.koopmans.com/Recepten/P/2323/image-thumb__2323__seo-blocks-content-media/Bakken.nl_Q1_Alleen_stroop_pannenkoeken.d9dbf3ac.jpg');
 
 -- --------------------------------------------------------
 
@@ -179,6 +181,32 @@ INSERT INTO `recipeinfo` (`id`, `recipe_id`, `user_id`, `record_type`, `date`, `
 (19, 2, 1, 'F', '31/07/2025', '', ''),
 (20, 3, 2, 'F', '31/07/2025', '', ''),
 (21, 4, 5, 'F', '01/08/2025', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `shopping_list`
+--
+
+CREATE TABLE `shopping_list` (
+  `id` int(11) NOT NULL,
+  `article_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `packages_needed` int(11) NOT NULL DEFAULT 1,
+  `total_amount_needed` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `date_added` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `shopping_list`
+--
+
+INSERT INTO `shopping_list` (`id`, `article_id`, `user_id`, `packages_needed`, `total_amount_needed`, `date_added`) VALUES
+(66, 4, 1, 3, 600.00, '2025-08-20 09:17:20'),
+(67, 5, 1, 4, 4.00, '2025-08-20 09:17:20'),
+(68, 6, 1, 4, 4.00, '2025-08-20 09:17:20'),
+(69, 7, 1, 2, 1000.00, '2025-08-20 09:17:20'),
+(70, 8, 1, 2, 200.00, '2025-08-20 09:17:20');
 
 -- --------------------------------------------------------
 
@@ -247,6 +275,14 @@ ALTER TABLE `recipeinfo`
   ADD KEY `test` (`user_id`);
 
 --
+-- Indexes for table `shopping_list`
+--
+ALTER TABLE `shopping_list`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `article_id` (`article_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
@@ -287,6 +323,12 @@ ALTER TABLE `recipeinfo`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
+-- AUTO_INCREMENT for table `shopping_list`
+--
+ALTER TABLE `shopping_list`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+
+--
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
@@ -316,6 +358,13 @@ ALTER TABLE `recipe`
 --
 ALTER TABLE `recipeinfo`
   ADD CONSTRAINT `recipeinfo_ibfk_1` FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`);
+
+--
+-- Constraints for table `shopping_list`
+--
+ALTER TABLE `shopping_list`
+  ADD CONSTRAINT `shopping_list_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `article` (`id`),
+  ADD CONSTRAINT `shopping_list_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

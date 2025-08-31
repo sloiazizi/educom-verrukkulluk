@@ -20,8 +20,8 @@ class Recipe
         $stmt->bind_param("i", $recipe_id);
         $stmt->execute();
         $result = $stmt->get_result();
-    
-        $recipeTotal = $result->fetch_assoc(); 
+
+        $recipeTotal = $result->fetch_assoc();
         if ($recipeTotal) {
             $user_id = $recipeTotal['user_id'];  // haal user_id from recipe data
             $user = $this->fetchUser($user_id);  // Fetch user data
@@ -49,17 +49,17 @@ class Recipe
 
         return false;  // false when no recipe found
     }
-    
+
     public function fetchRecipes($recipe_ids = null)
     {
         $recipes = [];
-        
+
         if ($recipe_ids === null) { //hiermee kan ik zeggen fetch all recipes c:
             $sql = "SELECT id FROM recipe ORDER BY id DESC";
             $stmt = $this->connection->prepare($sql);
             $stmt->execute();
             $result = $stmt->get_result();
-            
+
             while ($row = $result->fetch_assoc()) {
                 $recipe_id = $row['id'];
                 $recipeData = $this->fetchRecipe($recipe_id);
@@ -67,7 +67,7 @@ class Recipe
                     $recipes[] = $recipeData;
                 }
             }
-        } else {// en anders doe je het per recipe_id c:
+        } else { // en anders doe je het per recipe_id c:
             foreach ($recipe_ids as $id) {
                 $recipeData = $this->fetchRecipe($id);
                 if ($recipeData) {
@@ -118,62 +118,58 @@ class Recipe
 
 
     // ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆   Private functions for price and calories calculations ◆◆◆◆◆◆◆◆◆◆◆◆◆◆
-   // Replace these methods in your Recipe.php file
 
     private function calcPricePer4people($recipe_id)
     {
         $ingredients = $this->fetchIngredients($recipe_id);
-        
+
         if (!$ingredients) {
             return 0;
         }
-        
+
         $total = 0;
-        
+
         foreach ($ingredients as $ingredient) {
-            $price = $ingredient['price'];
-            $needed_amount_per_person = $ingredient['amount']; 
+            $price_in_cents = $ingredient['price'] * 100;
+            $needed_amount_per_person = $ingredient['amount'];
             $needed_amount_for_4 = $needed_amount_per_person * 4;
-            $package_size = $ingredient['package_size']; 
-            
-            if ($package_size == 1) { // now for 4 peeps
+            $package_size = $ingredient['package_size'];
+
+            if ($package_size == 1) {
                 $packages_needed = $needed_amount_for_4;
             } else {
-                $packages_needed = ceil($needed_amount_for_4 / $package_size); //ceil heb ik van manual
+                $packages_needed = ceil($needed_amount_for_4 / $package_size);
             }
-            
-            $item_cost = $price * $packages_needed;
-            $total += $item_cost;
+
+            $item_cost_in_cents = $price_in_cents * $packages_needed;
+            $total += $item_cost_in_cents;
         }
-        
-        return round($total, 2);
+
+        return round($total);
     }
 
     private function calcCaloriesPer4people($recipe_id)
     {
         $ingredients = $this->fetchIngredients($recipe_id);
-        
+
         if (!$ingredients) {
             return 0;
         }
-        
+
         $totalCalories = 0;
-        
+
         foreach ($ingredients as $ingredient) {
             $calories_per_unit = $ingredient['calories'];
             $needed_amount = $ingredient['amount'];
             $package_size = $ingredient['package_size'];
-            
-            // Calculate calories based on actual amount used
+
             if ($package_size == 1) {
-                // For items per piece
                 $actual_calories = $calories_per_unit * $needed_amount;
             } else {
-                // For items with package sizes - calculate calories per unit
                 $calories_per_gram_or_unit = $calories_per_unit / $package_size;
                 $actual_calories = $calories_per_gram_or_unit * $needed_amount;
             }
-            
+
             $totalCalories += $actual_calories;
         }
 
